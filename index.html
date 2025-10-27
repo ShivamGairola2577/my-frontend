@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Travel Layout</title>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: rgb(0, 255, 255);
+    }
+
+    .main-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgb(0, 150, 255);
+      padding: 10px 20px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .nav-left {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-left a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 5px;
+    }
+
+    .search-box input {
+      padding: 5px;
+    }
+
+    .reflective-div {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      padding: 30px 20px;
+    }
+
+    .text-box {
+      flex: 1;
+      max-width: 700px;
+    }
+
+    .heading-box {
+      background: rgb(0, 150, 255);
+      padding: 20px 30px 10px;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .paragraph-box {
+      background: rgb(0, 255, 255);
+      padding: 0 30px 30px;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .reflective-heading {
+      font-size: 2.2rem;
+      margin: 0;
+    }
+
+    .travel-paragraph {
+      line-height: 1.7;
+      text-align: justify;
+      margin: 0;
+    }
+
+    .hero-image-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .hero-image-container img {
+      width: 350px;
+      max-width: 100%;
+    }
+
+    @media (min-width: 1024px) {
+      .hero-image-container img {
+        width: 900px;
+        height: 600px;
+        object-fit: cover;
+      }
+    }
+
+    .section-heading {
+      text-align: center;
+      background: white;
+      padding: 10px;
+      margin: 0;
+      font-weight: bold;
+      font-size: 1.8rem;
+    }
+
+    .section-gallery,
+    .mountain-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      padding: 1rem;
+    }
+
+    .section-gallery img,
+    .mountain-gallery img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    #gallery {
+      display: none;
+      grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
+      gap: 15px;
+      padding: 1rem;
+    }
+
+    #gallery > div {
+      width: 30vh;
+      height: 30vh;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+
+    #gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .reflective-div {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 10px;
+      }
+
+      .text-box {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .hero-image-container {
+        width: 100%;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .hero-image-container img {
+        width: 80%;
+        max-width: 350px;
+        height: auto;
+      }
+
+      .mountain-gallery,
+      .section-gallery {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        gap: 12px;
+        padding: 12px 0 12px 10px;
+      }
+
+      .mountain-gallery img,
+      .section-gallery img {
+        flex: 0 0 100%;
+        width: 100vw;
+        height: auto;
+        scroll-snap-align: center;
+        object-fit: cover;
+        border-radius: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="main-nav">
+  <ul class="nav-left">
+    <li><a href="#mountain" class="scroll-link">Mountain</a></li>
+     <li><a href="#lake" class="scroll-link">Lake</a></li>
+    <li><a href="#temple" class="scroll-link">Temple</a></li>
+    <li><a href="#beaches" class="scroll-link">Beaches</a></li>
+    
+
+    <li><a href="contract.html">Contact</a></li>
+    <li><a href="signup.html">Signup</a></li>
+    <li><a href="login.html">Login</a></li>
+    <li><a href="history.html" id="historyNavBtn">History</a></li>
+        <li><a href="map.html">Map</a></li>
+  </ul>
+  <div class="search-box">
+    <input type="text" id="searchBox" placeholder="Search..." />
+    <button onclick="searchImages()">🔍</button>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<div id="staticContent">
+  <div class="reflective-div">
+    <div class="text-box">
+      <div class="heading-box">
+        <h1 class="reflective-heading">Traveling World With Us</h1>
+      </div>
+      <div class="paragraph-box">
+        <p class="travel-paragraph">
+            Traveling is an enriching experience that allows individuals to explore new cultures, cuisines, and landscapes. It broadens one’s perspective and fosters a deeper understanding of the world. Whether it's a weekend getaway or a month-long adventure, each journey offers unique memories and stories. Traveling encourages personal growth, as it often pushes people out of their comfort zones and challenges them to adapt to new environments. It also provides opportunities for social interaction, allowing travelers to meet new people and forge lasting friendships. Additionally, travel can be a source of inspiration, sparking creativity and new ideas. From the serene beaches to bustling city streets, every destination has something special to offer. Moreover, travel can be a way to disconnect from daily routines and recharge mentally and physically. Ultimately, the experiences gained through travel contribute to a richer, more fulfilling life. Embracing the spirit of adventure can lead to unforgettable moments and a deeper appreciation for the diversity of our planet. As we explore, we not only discover the world around us but also uncover new facets of ourselves. Each trip becomes a chapter in our life story, filled with lessons and insights. In the end, travel is not just about the destinations, but the journey and the connections we make along the way.
+          </p>
+      </div>
+    </div>
+    <div class="hero-image-container">
+      <img src="tr.png" alt="Vacation Bus Image" />
+    </div>
+  </div>
+
+  <!-- Section Gallery with IDs -->
+  <h2 class="section-heading" id="mountain">Mountain</h2>
+  <div class="mountain-gallery">
+    <img src="im1.webp" alt="Mountain 1">
+    <img src="ij1.jpg" alt="Mountain 2">
+    <img src="im3.jpg" alt="Mountain 3">
+    <img src="download.jpeg" alt="Mountain 4">
+  </div>
+   <h2 class="section-heading" id="lake">Lake</h2>
+    <div class="section-gallery">
+      <img src="lake.jpeg" alt="Lake 1">
+      <img src="lake2.jpeg" alt="Lake 2">
+      <img src="lake3.jpeg" alt="Lake 3">
+      <img src="lake4.jpeg" alt="Lake 4">
+    </div>
+  <h2 class="section-heading" id="beaches">Beaches</h2>
+  <div class="section-gallery">
+    <img src="beaches.jpeg" alt="Beach 1">
+    <img src="beaches2.jpeg" alt="Beach 2">
+    <img src="beaches3.jpeg" alt="Beach 3">
+    <img src="beaches4.jpeg" alt="Beach 4">
+  </div>
+
+  <h2 class="section-heading" id="temple">Temple</h2>
+  <div class="section-gallery">
+    <img src="temple1.jpg" alt="Temple 1">
+    <img src="temple2.jpg" alt="Temple 2">
+    <img src="temple3.jpg" alt="Temple 3">
+    <img src="temple4.png" alt="Temple 4">
+  </div>
+</div>
+
+<!-- Search Results -->
+<h2 class="section-heading" id="resultTitle" style="display:none;">Search Results</h2>
+<div id="gallery"></div>
+
+<!-- JS Scroll Fix -->
+<script>
+// Smooth scrolling for nav links
+document.querySelectorAll('.scroll-link').forEach(link => {
+  link.addEventListener('click', function (e) {
+    e.preventDefault();
+    const targetId = this.getAttribute('href').substring(1);
+    const targetEl = document.getElementById(targetId);
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+let backButtonExists = false;
+
+// --- SEARCH IMAGES ---
+// --- SEARCH IMAGES ---
+async function searchImages() {
+  const query = document.getElementById('searchBox').value.trim();
+  const gallery = document.getElementById('gallery');
+  const resultTitle = document.getElementById('resultTitle');
+  const staticContent = document.getElementById('staticContent');
+  const navbar = document.querySelector('.main-nav');
+
+  if (!query) {
+    alert('Please enter a search term.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`/search?query=${encodeURIComponent(query)}&count=100`);
+    const images = await res.json();
+
+    staticContent.style.display = 'none';
+    navbar.style.background = 'rgb(0, 150, 255)';
+    document.body.style.background = 'rgb(0, 150, 255)';
+    gallery.innerHTML = '';
+    gallery.style.display = 'flex';
+    gallery.style.flexWrap = 'wrap';
+    gallery.style.justifyContent = 'center';
+    gallery.style.gap = '12px';
+    gallery.style.padding = '12px';
+    gallery.style.background = 'rgb(0, 150, 255)';
+    resultTitle.style.display = 'block';
+
+    if (!backButtonExists) {
+      const backBtn = document.createElement('button');
+      backBtn.textContent = '← Back';
+      Object.assign(backBtn.style, {
+        margin: '10px 20px',
+        padding: '8px 16px',
+        fontSize: '16px',
+        cursor: 'pointer',
+        border: 'none',
+        borderRadius: '6px',
+        background: '#ffffff',
+        boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+        display: 'inline-block'
+      });
+      backBtn.addEventListener('click', () => {
+        gallery.style.display = 'none';
+        resultTitle.style.display = 'none';
+        staticContent.style.display = 'block';
+        document.body.style.background = 'rgb(0, 255, 255)';
+        backBtn.remove();
+        backButtonExists = false;
+      });
+      resultTitle.parentNode.insertBefore(backBtn, resultTitle);
+      backButtonExists = true;
+    }
+
+    if (images.length === 0) {
+      gallery.innerHTML = '<p style="color: white;">No images found.</p>';
+      return;
+    }
+
+    const isMobile = window.innerWidth <= 768;
+
+    images.forEach(img => {
+      const wrapper = document.createElement('div');
+      const imgTag = document.createElement('img');
+      imgTag.src = img.url || '';
+      imgTag.alt = img.description || 'Image';
+
+      Object.assign(wrapper.style, {
+        background: 'transparent',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+        borderRadius: '12px',
+        width: isMobile ? '45%' : '200px',
+        height: 'auto',
+        paddingBottom: '8px',
+        textAlign: 'center',
+        color: 'white',
+        fontSize: '14px',
+        lineHeight: '1.4'
+      });
+
+      Object.assign(imgTag.style, {
+        width: '100%',
+        height: isMobile ? '180px' : '250px',
+        objectFit: 'cover',
+        borderRadius: '12px'
+      });
+
+      wrapper.appendChild(imgTag);
+
+      // Add location info if available
+      if (img.location && img.location.title) {
+        const locDiv = document.createElement('div');
+        locDiv.style.marginTop = '5px';
+
+        const locText = document.createElement('span');
+        locText.textContent = img.location.title;
+
+        const mapsLink = document.createElement('a');
+        mapsLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(img.location.title)}`;
+        mapsLink.textContent = ' 📍 View on Map';
+        mapsLink.target = '_blank';
+        mapsLink.style.color = 'yellow';
+        mapsLink.style.textDecoration = 'none';
+        mapsLink.style.marginLeft = '4px';
+
+        locDiv.appendChild(locText);
+        locDiv.appendChild(mapsLink);
+        wrapper.appendChild(locDiv);
+      }
+
+      gallery.appendChild(wrapper);
+    });
+
+    resultTitle.scrollIntoView({ behavior: 'smooth' });
+    enablePopupOnImages();
+  } catch (error) {
+    console.error('Fetch error:', error);
+    alert('Failed to fetch search results.');
+  }
+}
+
+// Trigger search on Enter key
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('searchBox').addEventListener('keydown', e => {
+    if (e.key === 'Enter') searchImages();
+  });
+  enablePopupOnImages();
+});
+
+// --- POPUP MODAL ---
+function createModal() {
+  if (document.getElementById('popupOverlay')) return;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'popupOverlay';
+  Object.assign(overlay.style, {
+    position: 'fixed',
+    top: 0, left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+    padding: '10px'
+  });
+
+  const box = document.createElement('div');
+  Object.assign(box.style, {
+    background: '#fff',
+    borderRadius: '12px',
+    padding: '20px',
+    maxWidth: '90%',
+    width: '350px',
+    textAlign: 'center',
+    position: 'relative',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+    maxHeight: '90vh',            // 👈 limits popup height
+    overflowY: 'auto'             // 👈 adds scroll if content too tall
+  });
+
+  const close = document.createElement('span');
+  close.innerHTML = '&times;';
+  Object.assign(close.style, {
+    position: 'absolute',
+    top: '8px',
+    right: '12px',
+    fontSize: '24px',
+    cursor: 'pointer',
+    color: '#333',
+    zIndex: '10'
+  });
+  close.onclick = () => overlay.remove();
+
+  const image = document.createElement('img');
+  image.id = 'popupImage';
+  Object.assign(image.style, { 
+    width: '100%', 
+    height: '200px',              // 👈 reduced height
+    objectFit: 'cover',           // 👈 keeps it neat
+    borderRadius: '12px', 
+    marginBottom: '10px' 
+  });
+
+  const title = document.createElement('h3');
+  title.textContent = 'Book a Bus Tour';
+
+  const locationInfo = document.createElement('p');
+  locationInfo.innerHTML = `📍 <strong>Location:</strong> Beautiful Destination`;
+
+  const priceDiv = document.createElement('div');
+  priceDiv.style.margin = '8px 0';
+  priceDiv.innerHTML = `
+    <span style="font-size:1.2rem; font-weight:bold; color:green;">$50</span> 
+    <span style="text-decoration: line-through; color:red; margin-left:5px;">$100</span>
+    <span style="color:blue; margin-left:5px;">(50% OFF)</span>
+  `;
+
+  const mapDiv = document.createElement('p');
+  mapDiv.innerHTML = `<a href="https://www.google.com/maps/search/?api=1&query=Beautiful+Destination" target="_blank" style="color:blue; text-decoration:none;">🗺️ View on Map</a>`;
+
+  const phoneDiv = document.createElement('p');
+  phoneDiv.innerHTML = `📞 <a href="tel:8954159979" style="color:blue; text-decoration:none;">8954159979</a>`;
+
+  const seatInfo = document.createElement('p');
+  seatInfo.textContent = 'Seats Remaining: 30';
+  seatInfo.style.fontWeight = 'bold';
+  seatInfo.style.color = 'green';
+
+  const label = document.createElement('label');
+  label.textContent = 'No. of Seats: ';
+  label.style.fontWeight = 'bold';
+
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.value = 1;
+  input.min = 1;
+  input.style.margin = '10px';
+
+  const confirm = document.createElement('button');
+  confirm.textContent = 'Confirm Booking';
+  Object.assign(confirm.style, {
+    background: 'rgb(0,150,255)',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    padding: '10px 20px',
+    cursor: 'pointer',
+    marginTop: '10px'
+  });
+
+  confirm.onclick = async () => {
+    const seats = parseInt(input.value) || 1;
+    const cost = 100 * seats * 0.5; // 50% discount
+
+    let wallet = parseFloat(localStorage.getItem('wallet') || '2000');
+    if (wallet < cost) {
+      alert('Insufficient balance!');
+      return;
+    }
+    wallet -= cost;
+    localStorage.setItem('wallet', wallet);
+
+    let history = JSON.parse(localStorage.getItem('bookingHistory') || '[]');
+    history.push({
+      date: new Date().toLocaleString(),
+      image: image.src,
+      desc: `${title.textContent} - ${seats} seat(s)`,
+      amount: cost
+    });
+    localStorage.setItem('bookingHistory', JSON.stringify(history));
+
+    alert(`✅ Booking Confirmed!\n$${cost} deducted. Remaining balance: $${wallet}`);
+    overlay.remove();
+  };
+
+  // append all elements in proper order
+  box.append(
+    close, image, title, locationInfo, priceDiv,
+    mapDiv, phoneDiv, seatInfo, label, input, document.createElement('br'), confirm
+  );
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+
+// Enable modal on image click
+function enablePopupOnImages() {
+  document.querySelectorAll(".section-gallery img, .mountain-gallery img, #gallery img").forEach(img => {
+    img.addEventListener('click', () => {
+      createModal();
+      document.getElementById("popupImage").src = img.src;
+    });
+  });
+}
+</script>
+
+
+</body>
+</html>

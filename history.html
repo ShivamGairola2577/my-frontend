@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Booking History</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f8fc;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      color: #333;
+    }
+
+    h1 {
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+
+    .balance {
+      font-size: 18px;
+      margin-bottom: 20px;
+      background: #e3f2fd;
+      padding: 10px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    .history-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .history-card {
+      background: white;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 12px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .history-card img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .details {
+      flex: 1;
+    }
+
+    .details strong {
+      font-size: 16px;
+      color: #0096ff;
+    }
+
+    .details p {
+      margin: 5px 0;
+    }
+
+    .details small {
+      color: gray;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 8px 16px;
+      background: #0096ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0078cc;
+    }
+  </style>
+</head>
+<body>
+  <h1>📜 Booking History</h1>
+
+  <div class="balance">
+    💰 Remaining Balance: $<span id="remainingBalance">0</span>
+  </div>
+
+  <div class="history-container" id="historyContainer">
+    <p>Loading your history...</p>
+  </div>
+
+  <button onclick="window.location.href='main.html'">⬅️ Back to Home</button>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Load wallet from localStorage
+      const wallet = parseFloat(localStorage.getItem("wallet") || "2000");
+      document.getElementById("remainingBalance").textContent = wallet.toFixed(2);
+
+      // Load booking history
+      const historyContainer = document.getElementById("historyContainer");
+      const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
+
+      historyContainer.innerHTML = "";
+
+      if (history.length === 0) {
+        historyContainer.innerHTML = "<p>No booking history yet.</p>";
+        return;
+      }
+
+      // Show latest first
+      history.slice().reverse().forEach(item => {
+        const card = document.createElement("div");
+        card.className = "history-card";
+        card.innerHTML = `
+          <img src="${item.image}" alt="Booking Image">
+          <div class="details">
+            <strong>${item.desc}</strong>
+            <p>💵 $${item.amount}</p>
+            <small>📅 ${item.date}</small>
+          </div>
+        `;
+        historyContainer.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>

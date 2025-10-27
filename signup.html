@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Signup</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: rgb(0, 255, 255);
+    }
+
+    .main-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgb(0, 150, 255);
+      padding: 10px 20px;
+    }
+
+    .nav-left {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-left a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+    }
+
+    .form-container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: rgb(0, 150, 255);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      background: rgb(0, 150, 255);
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: rgb(0, 120, 220);
+    }
+
+    @media (max-width: 600px) {
+      .form-container {
+        margin: 30px 15px;
+        padding: 20px;
+      }
+
+      input, button {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="main-nav">
+    <ul class="nav-left">
+      <li><a href="main.html">Home</a></li>
+      <li><a href="signup.html">Signup</a></li>
+      <li><a href="login.html">Login</a></li>
+    </ul>
+  </nav>
+
+  <!-- Signup Form -->
+  <div class="form-container">
+    <h2>Sign Up</h2>
+    <form id="signupForm" autocomplete="off">
+      <input type="text" name="fullname" placeholder="Full Name" required />
+      <input type="text" name="address" placeholder="Address" required />
+      <input type="date" name="dob" required />
+      <input type="text" name="username" placeholder="Username" required />
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password" required minlength="6" />
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+
+  <!-- JS -->
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const formData = {
+        fullname: this.fullname.value.trim(),
+        address: this.address.value.trim(),
+        dob: this.dob.value,
+        username: this.username.value.trim(),
+        email: this.email.value.trim(),
+        password: this.password.value,
+      };
+
+      try {
+        const response = await fetch("/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+        alert(result.message || "Signup successful!");
+        this.reset();
+      } catch (err) {
+        console.error(err);
+        alert("Signup failed.");
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Google OAuth</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: rgb(0, 255, 255);
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background-color: rgb(0, 150, 255);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-container h2 {
+      color: #fff;
+      margin-bottom: 25px;
+    }
+
+    .input-box {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .login-btn {
+      width: 100%;
+      background-color: white;
+      color: rgb(0, 150, 255);
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    .login-btn:hover {
+      background-color: #e1e1e1;
+    }
+
+    .or-text {
+      color: #fff;
+      margin: 20px 0;
+    }
+
+    #google-btn {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .signup-text {
+      margin-top: 20px;
+      color: white;
+    }
+
+    .signup-text a {
+      color: #000;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .signup-text a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login to Your Account</h2>
+
+    <div id="google-btn"></div>
+
+    <p class="or-text">OR</p>
+
+    <input class="input-box" type="email" id="email" placeholder="Email" required />
+    <input class="input-box" type="password" id="password" placeholder="Password" required />
+    <button class="login-btn" onclick="handleEmailLogin()">Login</button>
+
+    <div class="signup-text">
+      New user? <a href="/signup.html">Sign up here</a>
+    </div>
+  </div>
+
+<script>
+  function handleCredentialResponse(response) {
+    fetch('/api/google-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: response.credential })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        alert("Welcome, " + data.name);
+        window.location.href = "/main.html";  // ✅ Redirect after verification
+      } else {
+        alert("Google login failed: " + data.message);
+      }
+    })
+    .catch(err => {
+      console.error("Google login error:", err);
+      alert("Error during Google login.");
+    });
+  }
+
+  window.onload = function () {
+    google.accounts.id.initialize({
+      client_id: "792481345073-muikukdlntigovopptad0mmhbs2fgo55.apps.googleusercontent.com",
+      callback: handleCredentialResponse
+    });
+    google.accounts.id.renderButton(
+      document.getElementById("google-btn"),
+      { theme: "filled_blue", size: "large" }
+    );
+  };
+
+  function handleEmailLogin() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
+
+    fetch("/api/email-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        alert("Welcome, " + data.name);
+        window.location.href = "/main.html";  // ✅ Redirect after verification
+      } else {
+        alert("Login failed: " + data.message);
+      }
+    })
+    .catch(err => {
+      console.error("Email login error:", err);
+      alert("Server error during login.");
+    });
+  }
+</script>
+
+</body>
+</html>
