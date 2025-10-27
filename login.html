@@ -111,7 +111,8 @@
     .then(data => {
       if (data.status === "success") {
         alert("Welcome, " + data.name);
-        window.location.href = "/main.html";  // ✅ Redirect after verification
+      window.location.href = "/index.html";  // ✅ correct
+ // ✅ Redirect after verification
       } else {
         alert("Google login failed: " + data.message);
       }
@@ -151,7 +152,8 @@
     .then(data => {
       if (data.status === "success") {
         alert("Welcome, " + data.name);
-        window.location.href = "/main.html";  // ✅ Redirect after verification
+      window.location.href = "/index.html";  // ✅ correct
+ // ✅ Redirect after verification
       } else {
         alert("Login failed: " + data.message);
       }
