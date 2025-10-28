@@ -115,7 +115,8 @@
 
   <!-- JS -->
   <script>
-    const BACKEND_URL = "https://travel-backend.onrender.com"; // ✅ Change this to your backend deploy URL
+    // ✅ Updated backend URL
+    const BACKEND_URL = "https://my-backanduffufr7t.onrender.com";
 
     document.getElementById("signupForm").addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -130,7 +131,7 @@
       };
 
       try {
-        const response = await fetch(`${BACKEND_URL}/signup`, {  // ✅ Corrected endpoint
+        const response = await fetch(`${BACKEND_URL}/api/signup`, {  // ✅ Corrected endpoint
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
@@ -141,6 +142,7 @@
         if (response.ok) {
           alert(result.message || "✅ Signup successful!");
           this.reset();
+          window.location.href = "login.html"; // ✅ Redirect after success
         } else {
           alert(result.error || "❌ Signup failed. Please try again.");
         }
