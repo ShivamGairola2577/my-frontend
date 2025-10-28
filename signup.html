@@ -93,7 +93,7 @@
   <!-- Navbar -->
   <nav class="main-nav">
     <ul class="nav-left">
-   <li><a href="index.html">Home</a></li>   <!-- ✅ correct -->
+      <li><a href="index.html">Home</a></li>
       <li><a href="signup.html">Signup</a></li>
       <li><a href="login.html">Login</a></li>
     </ul>
@@ -115,6 +115,8 @@
 
   <!-- JS -->
   <script>
+    const BACKEND_URL = "https://travel-backend.onrender.com"; // ✅ Change this to your backend deploy URL
+
     document.getElementById("signupForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
@@ -128,20 +130,24 @@
       };
 
       try {
-        const response = await fetch("/signup", {
+        const response = await fetch(`${BACKEND_URL}/signup`, {  // ✅ Corrected endpoint
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
 
         const result = await response.json();
-        alert(result.message || "Signup successful!");
-        this.reset();
+
+        if (response.ok) {
+          alert(result.message || "✅ Signup successful!");
+          this.reset();
+        } else {
+          alert(result.error || "❌ Signup failed. Please try again.");
+        }
+
       } catch (err) {
         console.error(err);
-        alert("Signup failed.");
+        alert("⚠️ Error: Could not connect to server.");
       }
     });
   </script>
