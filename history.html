@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Booking History</title>
+  <title>Booking History | RenderApp</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -23,9 +24,10 @@
       font-size: 18px;
       margin-bottom: 20px;
       background: #e3f2fd;
-      padding: 10px;
+      padding: 10px 20px;
       border-radius: 10px;
       display: inline-block;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     .history-container {
@@ -33,6 +35,7 @@
       flex-direction: column;
       align-items: center;
       gap: 15px;
+      margin-bottom: 20px;
     }
 
     .history-card {
@@ -46,6 +49,12 @@
       display: flex;
       align-items: center;
       gap: 15px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .history-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
     }
 
     .history-card img {
@@ -66,6 +75,7 @@
 
     .details p {
       margin: 5px 0;
+      font-size: 15px;
     }
 
     .details small {
@@ -73,17 +83,30 @@
     }
 
     button {
-      margin-top: 20px;
-      padding: 8px 16px;
+      padding: 10px 18px;
       background: #0096ff;
       color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      font-size: 15px;
+      transition: background 0.3s;
     }
 
     button:hover {
       background: #0078cc;
+    }
+
+    @media (max-width: 600px) {
+      .history-card {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .history-card img {
+        width: 100%;
+        height: auto;
+      }
     }
   </style>
 </head>
@@ -98,38 +121,43 @@
     <p>Loading your history...</p>
   </div>
 
-  <button onclick="window.location.href='main.html'">⬅️ Back to Home</button>
+  <button id="homeBtn">⬅️ Back to Home</button>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Load wallet from localStorage
-      const wallet = parseFloat(localStorage.getItem("wallet") || "2000");
-      document.getElementById("remainingBalance").textContent = wallet.toFixed(2);
-
-      // Load booking history
+      const balanceElement = document.getElementById("remainingBalance");
       const historyContainer = document.getElementById("historyContainer");
-      const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
+      const homeBtn = document.getElementById("homeBtn");
 
+      // ✅ Load wallet balance
+      const wallet = parseFloat(localStorage.getItem("wallet") || "2000");
+      balanceElement.textContent = wallet.toFixed(2);
+
+      // ✅ Load booking history
+      const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
       historyContainer.innerHTML = "";
 
       if (history.length === 0) {
         historyContainer.innerHTML = "<p>No booking history yet.</p>";
-        return;
+      } else {
+        history.slice().reverse().forEach(item => {
+          const card = document.createElement("div");
+          card.className = "history-card";
+          card.innerHTML = `
+            <img src="${item.image || 'https://via.placeholder.com/80'}" alt="Booking Image" />
+            <div class="details">
+              <strong>${item.desc || 'Booking'}</strong>
+              <p>💵 $${item.amount?.toFixed ? item.amount.toFixed(2) : item.amount}</p>
+              <small>📅 ${item.date || 'Unknown Date'}</small>
+            </div>
+          `;
+          historyContainer.appendChild(card);
+        });
       }
 
-      // Show latest first
-      history.slice().reverse().forEach(item => {
-        const card = document.createElement("div");
-        card.className = "history-card";
-        card.innerHTML = `
-          <img src="${item.image}" alt="Booking Image">
-          <div class="details">
-            <strong>${item.desc}</strong>
-            <p>💵 $${item.amount}</p>
-            <small>📅 ${item.date}</small>
-          </div>
-        `;
-        historyContainer.appendChild(card);
+      // ✅ Back button
+      homeBtn.addEventListener("click", () => {
+        window.location.href = "main.html";
       });
     });
   </script>
