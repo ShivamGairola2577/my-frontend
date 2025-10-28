@@ -302,7 +302,6 @@ document.querySelectorAll('.scroll-link').forEach(link => {
 let backButtonExists = false;
 
 // --- SEARCH IMAGES ---
-// --- SEARCH IMAGES ---
 async function searchImages() {
   const query = document.getElementById('searchBox').value.trim();
   const gallery = document.getElementById('gallery');
@@ -316,7 +315,8 @@ async function searchImages() {
   }
 
   try {
-    const res = await fetch(`https://travel-backend.onrender.com/search?query=${encodeURIComponent(query)}&count=100`);
+    // ✅ Updated Render backend URL here
+    const res = await fetch(`https://my-backanduffufr7t.onrender.com/search?query=${encodeURIComponent(query)}&count=100`);
 
     const images = await res.json();
 
@@ -462,8 +462,8 @@ function createModal() {
     textAlign: 'center',
     position: 'relative',
     boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-    maxHeight: '90vh',            // 👈 limits popup height
-    overflowY: 'auto'             // 👈 adds scroll if content too tall
+    maxHeight: '90vh',
+    overflowY: 'auto'
   });
 
   const close = document.createElement('span');
@@ -483,8 +483,8 @@ function createModal() {
   image.id = 'popupImage';
   Object.assign(image.style, { 
     width: '100%', 
-    height: '200px',              // 👈 reduced height
-    objectFit: 'cover',           // 👈 keeps it neat
+    height: '200px',
+    objectFit: 'cover',
     borderRadius: '12px', 
     marginBottom: '10px' 
   });
@@ -561,7 +561,6 @@ function createModal() {
     overlay.remove();
   };
 
-  // append all elements in proper order
   box.append(
     close, image, title, locationInfo, priceDiv,
     mapDiv, phoneDiv, seatInfo, label, input, document.createElement('br'), confirm
@@ -570,8 +569,6 @@ function createModal() {
   document.body.appendChild(overlay);
 }
 
-
-// Enable modal on image click
 function enablePopupOnImages() {
   document.querySelectorAll(".section-gallery img, .mountain-gallery img, #gallery img").forEach(img => {
     img.addEventListener('click', () => {
@@ -583,6 +580,8 @@ function enablePopupOnImages() {
 </script>
 
 
+
 </body>
 </html>
+
 
