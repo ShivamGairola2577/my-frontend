@@ -316,7 +316,8 @@ async function searchImages() {
   }
 
   try {
-    const res = await fetch(`/search?query=${encodeURIComponent(query)}&count=100`);
+    const res = await fetch(`https://travel-backend.onrender.com/search?query=${encodeURIComponent(query)}&count=100`);
+
     const images = await res.json();
 
     staticContent.style.display = 'none';
@@ -584,3 +585,4 @@ function enablePopupOnImages() {
 
 </body>
 </html>
+
