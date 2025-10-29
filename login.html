@@ -6,7 +6,6 @@
   <title>Login | Google OAuth</title>
 
   <!-- Google Identity Services -->
-  <!-- removed crossorigin attribute to avoid potential loading issues on GH Pages -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
@@ -44,7 +43,7 @@
     <h2>Login to Your Account</h2>
 
     <!-- Google button target -->
-    <div id="google-btn" aria-hidden="true"></div>
+    <div id="google-btn"></div>
 
     <div class="or-text">OR</div>
 
@@ -58,8 +57,10 @@
 
   <script>
   // ---- config ----
-  const BACKEND = "https://my-backanduffufr7t.onrender.com"; // your render backend
-  const GOOGLE_CLIENT_ID = "792481345073-muikukdlntigovopptad0mmhbs2fgo55.apps.googleusercontent.com";
+  const BACKEND = "https://my-backanduffufr7t.onrender.com";
+  
+  // ⚠️ Use your correct client ID here:
+  const GOOGLE_CLIENT_ID = "743101457462-pv42b9mqemsj52eg7vulkldceqt2i9d3.apps.googleusercontent.com";
 
   // ---- helper: wait until google.accounts.id available ----
   function waitForGoogle(timeoutMs = 10000) {
@@ -89,15 +90,13 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: response.credential }),
       });
-      let data;
-      try { data = await r.json(); } catch { data = null; }
+      const data = await r.json();
 
-      if (r.ok && data && data.status === "success") {
+      if (r.ok && data.status === "success") {
         alert(`Welcome, ${data.name}`);
         window.location.href = "index.html";
       } else {
-        console.error("Google login failed:", r.status, data);
-        alert((data && (data.message || data.error)) || "Google login failed.");
+        alert(data.message || "Google login failed.");
       }
     } catch (err) {
       console.error("Network error during Google login:", err);
@@ -109,26 +108,14 @@
   (async function initGoogleButton() {
     try {
       await waitForGoogle();
-    } catch (err) {
-      console.error(err);
-      // Optionally show a fallback or message to user
-      return;
-    }
-
-    try {
       google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: handleCredentialResponse,
       });
-
-      // render the button (customizable)
       google.accounts.id.renderButton(
         document.getElementById("google-btn"),
         { theme: "outline", size: "large", width: 280 }
       );
-
-      // optional - show One Tap prompt
-      // google.accounts.id.prompt();
     } catch (err) {
       console.error("Error initializing Google button:", err);
     }
@@ -154,16 +141,13 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+      const data = await res.json();
 
-      let data;
-      try { data = await res.json(); } catch { data = null; }
-
-      if (res.ok && data && data.status === "success") {
+      if (res.ok && data.status === "success") {
         alert(`Welcome, ${data.name}`);
         window.location.href = "index.html";
       } else {
-        console.error("Email login failed:", res.status, data);
-        alert((data && (data.message || data.error)) || "Login failed. Check credentials.");
+        alert(data.message || "Login failed. Check credentials.");
       }
     } catch (err) {
       console.error("Network error during email login:", err);
