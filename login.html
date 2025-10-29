@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | Google OAuth</title>
+
+  <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer crossorigin="anonymous"></script>
+
   <style>
     body {
       margin: 0;
@@ -88,10 +91,12 @@
   <div class="login-container">
     <h2>Login to Your Account</h2>
 
+    <!-- Google Sign-In Button -->
     <div id="google-btn"></div>
 
     <p class="or-text">OR</p>
 
+    <!-- Email Login -->
     <input class="input-box" type="email" id="email" placeholder="Email" required />
     <input class="input-box" type="password" id="password" placeholder="Password" required />
     <button class="login-btn" onclick="handleEmailLogin()">Login</button>
@@ -102,7 +107,7 @@
   </div>
 
   <script>
-    // ✅ Google OAuth handler
+    // ✅ Handle Google OAuth response
     async function handleCredentialResponse(response) {
       try {
         const res = await fetch('https://my-backanduffufr7t.onrender.com/api/google-login', {
@@ -135,7 +140,7 @@
 
       google.accounts.id.renderButton(
         document.getElementById("google-btn"),
-        { theme: "filled_blue", size: "large" }
+        { theme: "filled_blue", size: "large", width: 250 }
       );
     };
 
