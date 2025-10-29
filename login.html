@@ -1,180 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Login | Google OAuth</title>
 
   <!-- Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer crossorigin="anonymous"></script>
+  <!-- removed crossorigin attribute to avoid potential loading issues on GH Pages -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
     body {
       margin: 0;
       padding: 0;
-      background-color: rgb(0, 255, 255);
+      background-color: rgb(0,255,255);
       font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
     }
-
     .login-container {
-      background-color: rgb(0, 150, 255);
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-      width: 90%;
-      max-width: 400px;
+      background-color: rgb(0,150,255);
+      padding: 36px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      width: 92%;
+      max-width: 420px;
       text-align: center;
     }
-
-    .login-container h2 {
-      color: #fff;
-      margin-bottom: 25px;
-    }
-
-    .input-box {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 5px;
-    }
-
-    .login-btn {
-      width: 100%;
-      background-color: white;
-      color: rgb(0, 150, 255);
-      border: none;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 5px;
-      margin-top: 15px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .login-btn:hover {
-      background-color: #e1e1e1;
-    }
-
-    .or-text {
-      color: #fff;
-      margin: 20px 0;
-    }
-
-    #google-btn {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    .signup-text {
-      margin-top: 20px;
-      color: white;
-    }
-
-    .signup-text a {
-      color: #000;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .signup-text a:hover {
-      text-decoration: underline;
-    }
+    h2 { color: #fff; margin-bottom: 20px; }
+    .input-box { width:100%; padding:10px; margin:8px 0; border-radius:6px; border:none; }
+    .login-btn { width:100%; background:#fff; color:rgb(0,150,255); padding:12px; border-radius:6px; border:none; cursor:pointer; }
+    .or-text { color:#fff; margin:18px 0; }
+    #google-btn { display:flex; justify-content:center; margin-bottom:12px; }
+    .small { font-size:0.9rem; color:#fff; margin-top:12px; }
+    .small a { color:#000; font-weight:700; text-decoration:none; }
+    .small a:hover { text-decoration:underline; }
   </style>
 </head>
 <body>
   <div class="login-container">
     <h2>Login to Your Account</h2>
 
-    <!-- Google Sign-In Button -->
-    <div id="google-btn"></div>
+    <!-- Google button target -->
+    <div id="google-btn" aria-hidden="true"></div>
 
-    <p class="or-text">OR</p>
+    <div class="or-text">OR</div>
 
-    <!-- Email Login -->
-    <input class="input-box" type="email" id="email" placeholder="Email" required />
-    <input class="input-box" type="password" id="password" placeholder="Password" required />
-    <button class="login-btn" onclick="handleEmailLogin()">Login</button>
+    <!-- Email login -->
+    <input id="email" class="input-box" type="email" placeholder="Email" autocomplete="username" />
+    <input id="password" class="input-box" type="password" placeholder="Password" autocomplete="current-password" />
+    <button id="emailLoginBtn" class="login-btn">Login</button>
 
-    <div class="signup-text">
-      New user? <a href="signup.html">Sign up here</a>
-    </div>
+    <div class="small">New user? <a href="signup.html">Sign up here</a></div>
   </div>
 
   <script>
-    // ✅ Handle Google OAuth response
-    async function handleCredentialResponse(response) {
-      try {
-        const res = await fetch('https://my-backanduffufr7t.onrender.com/api/google-login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: response.credential })
-        });
+  // ---- config ----
+  const BACKEND = "https://my-backanduffufr7t.onrender.com"; // your render backend
+  const GOOGLE_CLIENT_ID = "792481345073-muikukdlntigovopptad0mmhbs2fgo55.apps.googleusercontent.com";
 
-        if (!res.ok) throw new Error("Network response was not ok");
-        const data = await res.json();
-
-        if (data.status === "success") {
-          alert(`Welcome, ${data.name}`);
-          window.location.href = "index.html";
-        } else {
-          alert(`Google login failed: ${data.message || "Unknown error"}`);
+  // ---- helper: wait until google.accounts.id available ----
+  function waitForGoogle(timeoutMs = 10000) {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+      (function poll() {
+        if (window.google && google.accounts && google.accounts.id) {
+          return resolve(true);
         }
-      } catch (err) {
-        console.error("Google login error:", err);
-        alert("Error during Google login. Please try again later.");
+        if (Date.now() - start > timeoutMs) {
+          return reject(new Error("Google Identity script not available (timeout)"));
+        }
+        setTimeout(poll, 150);
+      })();
+    });
+  }
+
+  // ---- handle Google token (send to backend) ----
+  async function handleCredentialResponse(response) {
+    if (!response || !response.credential) {
+      alert("Google response missing credential.");
+      return;
+    }
+    try {
+      const r = await fetch(`${BACKEND}/api/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: response.credential }),
+      });
+      let data;
+      try { data = await r.json(); } catch { data = null; }
+
+      if (r.ok && data && data.status === "success") {
+        alert(`Welcome, ${data.name}`);
+        window.location.href = "index.html";
+      } else {
+        console.error("Google login failed:", r.status, data);
+        alert((data && (data.message || data.error)) || "Google login failed.");
       }
+    } catch (err) {
+      console.error("Network error during Google login:", err);
+      alert("Network error. Try again later.");
+    }
+  }
+
+  // ---- initialize GSI button safely ----
+  (async function initGoogleButton() {
+    try {
+      await waitForGoogle();
+    } catch (err) {
+      console.error(err);
+      // Optionally show a fallback or message to user
+      return;
     }
 
-    // ✅ Initialize Google login button
-    window.onload = function () {
+    try {
       google.accounts.id.initialize({
-        client_id: "792481345073-muikukdlntigovopptad0mmhbs2fgo55.apps.googleusercontent.com",
-        callback: handleCredentialResponse
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse,
       });
 
+      // render the button (customizable)
       google.accounts.id.renderButton(
         document.getElementById("google-btn"),
-        { theme: "filled_blue", size: "large", width: 250 }
+        { theme: "outline", size: "large", width: 280 }
       );
-    };
 
-    // ✅ Email login handler
-    async function handleEmailLogin() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (!email || !password) {
-        alert("Please enter both email and password.");
-        return;
-      }
-
-      try {
-        const res = await fetch("https://my-backanduffufr7t.onrender.com/api/email-login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
-        });
-
-        if (!res.ok) throw new Error("Network response was not ok");
-        const data = await res.json();
-
-        if (data.status === "success") {
-          alert(`Welcome, ${data.name}`);
-          window.location.href = "index.html";
-        } else {
-          alert(`Login failed: ${data.message || "Invalid credentials."}`);
-        }
-      } catch (err) {
-        console.error("Email login error:", err);
-        alert("Server error during login. Please try again later.");
-      }
+      // optional - show One Tap prompt
+      // google.accounts.id.prompt();
+    } catch (err) {
+      console.error("Error initializing Google button:", err);
     }
+  })();
+
+  // ---- EMAIL LOGIN ----
+  const emailBtn = document.getElementById("emailLoginBtn");
+  emailBtn.addEventListener("click", async () => {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
+
+    emailBtn.disabled = true;
+    emailBtn.textContent = "Logging in...";
+
+    try {
+      const res = await fetch(`${BACKEND}/api/email-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      let data;
+      try { data = await res.json(); } catch { data = null; }
+
+      if (res.ok && data && data.status === "success") {
+        alert(`Welcome, ${data.name}`);
+        window.location.href = "index.html";
+      } else {
+        console.error("Email login failed:", res.status, data);
+        alert((data && (data.message || data.error)) || "Login failed. Check credentials.");
+      }
+    } catch (err) {
+      console.error("Network error during email login:", err);
+      alert("Unable to reach server. Try again later.");
+    } finally {
+      emailBtn.disabled = false;
+      emailBtn.textContent = "Login";
+    }
+  });
   </script>
 </body>
 </html>
