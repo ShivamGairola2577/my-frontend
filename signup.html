@@ -7,22 +7,26 @@
   <style>
     body {
       margin: 0;
-      font-family: sans-serif;
-      background: rgb(0, 255, 255);
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, rgb(0, 255, 255), rgb(0, 150, 255));
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
+    /* Navbar */
     .main-nav {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      background: rgb(0, 150, 255);
-      padding: 10px 20px;
+      background: rgb(0, 120, 220);
+      padding: 15px 0;
     }
 
     .nav-left {
       list-style: none;
       display: flex;
-      gap: 15px;
+      gap: 25px;
       margin: 0;
       padding: 0;
     }
@@ -31,20 +35,28 @@
       text-decoration: none;
       color: white;
       font-weight: bold;
+      font-size: 18px;
+      transition: color 0.3s ease;
     }
 
+    .nav-left a:hover {
+      color: #e0e0e0;
+    }
+
+    /* Form container */
     .form-container {
-      max-width: 500px;
-      margin: 50px auto;
       background: white;
-      padding: 30px;
+      max-width: 450px;
+      margin: 60px auto;
+      padding: 35px 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.5s ease-in-out;
     }
 
     .form-container h2 {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       color: rgb(0, 150, 255);
     }
 
@@ -55,10 +67,16 @@
     }
 
     input {
-      padding: 10px;
+      padding: 12px;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      border-color: rgb(0, 150, 255);
     }
 
     button {
@@ -76,14 +94,16 @@
       background: rgb(0, 120, 220);
     }
 
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
     @media (max-width: 600px) {
       .form-container {
-        margin: 30px 15px;
-        padding: 20px;
-      }
-
-      input, button {
-        font-size: 0.95rem;
+        margin: 40px 15px;
+        padding: 25px 15px;
       }
     }
   </style>
@@ -101,7 +121,7 @@
 
   <!-- Signup Form -->
   <div class="form-container">
-    <h2>Sign Up</h2>
+    <h2>Create Your Account</h2>
     <form id="signupForm" autocomplete="off">
       <input type="text" name="fullname" placeholder="Full Name" required />
       <input type="text" name="address" placeholder="Address" required />
@@ -113,9 +133,8 @@
     </form>
   </div>
 
-  <!-- JS -->
   <script>
-    // ✅ Correct backend URL (matches your Render app)
+    // ✅ Render backend URL
     const BACKEND_URL = "https://my-backanduffufr7t.onrender.com";
 
     document.getElementById("signupForm").addEventListener("submit", async (e) => {
@@ -123,27 +142,29 @@
 
       const form = e.target;
       const formData = {
-        fullname: form.elements.fullname.value.trim(),
-        address: form.elements.address.value.trim(),
-        dob: form.elements.dob.value,
-        username: form.elements.username.value.trim(),
-        email: form.elements.email.value.trim(),
-        password: form.elements.password.value,
+        fullname: form.fullname.value.trim(),
+        address: form.address.value.trim(),
+        dob: form.dob.value,
+        username: form.username.value.trim(),
+        email: form.email.value.trim(),
+        password: form.password.value,
       };
 
       try {
-        // ✅ Correct route: /signup (not /api/signup)
+        // ✅ Match with backend route: /signup
         const response = await fetch(`${BACKEND_URL}/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
 
+        const text = await response.text();
         let result;
+
         try {
-          result = await response.json();
+          result = JSON.parse(text);
         } catch {
-          result = { message: "Invalid response from server." };
+          result = { message: text };
         }
 
         if (response.ok) {
@@ -151,12 +172,11 @@
           form.reset();
           window.location.href = "login.html";
         } else {
-          alert(result.message || "❌ Signup failed. Please try again.");
+          alert(result.error || result.message || "❌ Signup failed. Please try again.");
         }
-
       } catch (err) {
-        console.error(err);
-        alert("⚠️ Error: Could not connect to server.");
+        console.error("Error connecting to backend:", err);
+        alert("⚠️ Could not connect to server. Please try again later.");
       }
     });
   </script>
