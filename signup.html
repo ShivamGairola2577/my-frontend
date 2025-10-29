@@ -115,36 +115,43 @@
 
   <!-- JS -->
   <script>
-    // ✅ Updated backend URL
+    // ✅ Correct backend URL (matches your Render app)
     const BACKEND_URL = "https://my-backanduffufr7t.onrender.com";
 
-    document.getElementById("signupForm").addEventListener("submit", async function (e) {
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      const form = e.target;
       const formData = {
-        fullname: this.fullname.value.trim(),
-        address: this.address.value.trim(),
-        dob: this.dob.value,
-        username: this.username.value.trim(),
-        email: this.email.value.trim(),
-        password: this.password.value,
+        fullname: form.elements.fullname.value.trim(),
+        address: form.elements.address.value.trim(),
+        dob: form.elements.dob.value,
+        username: form.elements.username.value.trim(),
+        email: form.elements.email.value.trim(),
+        password: form.elements.password.value,
       };
 
       try {
-        const response = await fetch(`${BACKEND_URL}/api/signup`, {  // ✅ Corrected endpoint
+        // ✅ Correct route: /signup (not /api/signup)
+        const response = await fetch(`${BACKEND_URL}/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
 
-        const result = await response.json();
+        let result;
+        try {
+          result = await response.json();
+        } catch {
+          result = { message: "Invalid response from server." };
+        }
 
         if (response.ok) {
           alert(result.message || "✅ Signup successful!");
-          this.reset();
-          window.location.href = "login.html"; // ✅ Redirect after success
+          form.reset();
+          window.location.href = "login.html";
         } else {
-          alert(result.error || "❌ Signup failed. Please try again.");
+          alert(result.message || "❌ Signup failed. Please try again.");
         }
 
       } catch (err) {
