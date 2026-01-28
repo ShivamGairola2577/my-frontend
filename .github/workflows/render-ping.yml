@@ -2,7 +2,7 @@ name: Keep Render Awake
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/5 * * * *"   # runs every 5 minutes
   workflow_dispatch:
 
 jobs:
@@ -10,3 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: curl -L https://my-backanduffufr7t.onrender.com
+
